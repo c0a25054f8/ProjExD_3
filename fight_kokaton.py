@@ -162,6 +162,24 @@ class Score:
         self.img = self.fonto.render(f"Score:{self.score}",0,(0,0,255))   
         screen.blit(self.img, self.rct)
 
+#追加機能3.爆発エフェクト
+class Explosion:
+    def __init__(self,xy):
+        self.imgs=[]
+        self.base_img=pg.image.load("fig/explosion.gif")
+        self.imgs.append(self.base_img)
+        self.imgs.append(pg.transform.flip(self.base_img,True,True))
+        self.rct=self.base_img.get_rect()
+        self.rct.center = xy
+        self.life=30
+        self.duration = 300
+    
+    def update(self,screen):
+        if self.life>0:
+            self.life-=1
+            img=self.imgs[self.life%len(self.imgs)]
+            screen.blit(img, self.rct)
+
 def main():
     pg.display.set_caption("たたかえ！こうかとん")
     screen = pg.display.set_mode((WIDTH, HEIGHT))    
