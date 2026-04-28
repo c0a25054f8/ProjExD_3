@@ -172,6 +172,7 @@ def main():
     for i in range(NUM_OF_BOMBS):
         bomb=Bomb((255, 0, 0), 10)
         bombs.append(bomb)
+    beams=[]
     beam = None  # ゲーム初期化時にはビームは存在しない
     score=Score(screen) #Scoreインスタンスの生成
     clock = pg.time.Clock()
@@ -182,7 +183,8 @@ def main():
                 return
             if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
                 # スペースキー押下でBeamクラスのインスタンス生成
-                beam = Beam(bird)            
+                beam = Beam(bird)
+                beams.append(beam) #リストにappend        
         screen.blit(bg_img, [0, 0])
         
         #こうかとんと爆弾衝突
@@ -196,25 +198,30 @@ def main():
                 pg.display.update()
                 time.sleep(1)
                 return
-        #ビームと爆弾衝突
-        for i, bomb in enumerate(bombs):
-            if bomb is not None:
-                if beam is not None:
-                    if beam.rct.colliderect(bomb.rct): #練習2 ビームと爆弾の衝突判定
-                        bombs[i]=None
-                        beam=None
-                        bird.change_img(6, screen) #練習3 こうかとんの喜びエフェクト
-                        score.score+=1 #スコアアップ
-                        pg.display.update()
-        
+        #ビームと爆弾衝突   追加機能2.複数ビーム
+        for j, beam in enumerate(beams): #リストの要素1つずつに対して爆弾と衝突判定
+            if beam is None: 
+                continue #Noneだったらスキップ
+            for i, bomb in enumerate(bombs):
+                 if bomb is None:
+                     continue #Noneだったらスキップ
+                 if beam.rct.colliderect(bomb.rct): #練習2 ビームと爆弾の衝突判定
+                    bombs[i]=None
+                    beams[j]=None
+                    bird.change_img(6, screen) #練習3 こうかとんの喜びエフェクト
+                    score.score+=1 #スコアアップ
+                    break
+
+        #爆弾リストとビームリストに対して，要素がNoneでないものだけのリストに更新
         bombs = [bomb for bomb in bombs if bomb is not None]
+        beams = [beam for beam in beams if beam is not None] 
 
         key_lst = pg.key.get_pressed()
         bird.update(key_lst, screen)
-        if beam is not None:
+        for beam in beams:
             beam.update(screen)  
         for bomb in bombs:
-            bomb.update(screen)
+            bomb.update(screen) 
         score.update(screen) #updateメソッドを呼び出してスコアを描画
         pg.display.update()
         tmr += 1
