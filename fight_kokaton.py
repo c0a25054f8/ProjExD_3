@@ -219,7 +219,11 @@ def main():
         key_lst = pg.key.get_pressed()
         bird.update(key_lst, screen)
         for beam in beams:
-            beam.update(screen)  
+            beam.update(screen)
+            
+        #issue追加
+        beams = [b for b in beams if b is not None and check_bound(b.rct) == (True, True)]
+
         for bomb in bombs:
             bomb.update(screen) 
         score.update(screen) #updateメソッドを呼び出してスコアを描画
